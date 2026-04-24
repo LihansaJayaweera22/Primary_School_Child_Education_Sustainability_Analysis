@@ -93,3 +93,32 @@ else:
     )
 
     st.plotly_chart(fig_trends, use_container_width=True)
+
+# Top 10 countries with highest children out of school
+st.subheader("Top 10 Countries with Highest Children Out of School")
+
+top10_df = (
+    year_filtered_df
+    .groupby("Country")["Children_Out_of_School"].mean()
+    .reset_index()
+    .sort_values("Children_Out_of_School", ascending=False)
+    .head(10)
+)
+
+fig_top10 = px.bar(
+    top10_df,
+    x="Children_Out_of_School",
+    y="Country",
+    orientation="h",
+    title="Top 10 Countries by Average Children Out of School",
+    labels={"Children_Out_of_School": "Average Children Out of School",
+            "Country": "Country"}
+)
+
+fig_top10.update_layout(
+    yaxis=dict(autorange="reversed"),
+    xaxis_title="Average Children Out of School",
+    margin=dict(l=150, r=20, t=60, b=40),
+)
+
+st.plotly_chart(fig_top10, use_container_width=True)
