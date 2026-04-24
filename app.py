@@ -38,16 +38,33 @@ year_range = st.sidebar.slider(
     (int(df["Year"].min()), int(df["Year"].max()))
 )
 
-filtered_df = df[
-    (df["Country"].isin(selected_countries)) &
-    (df["Year"] >= year_range[0]) &
-    (df["Year"] <= year_range[1])
-]
+filtered_df = df[(df["Country"].isin(selected_countries)) & (
+    df["Year"] >= year_range[0]) & (df["Year"] <= year_range[1])]
 
-year_filtered_df = df[
-    (df["Year"] >= year_range[0]) &
-    (df["Year"] <= year_range[1])
-]
+year_filtered_df = df[(df["Year"] >= year_range[0]) &
+                      (df["Year"] <= year_range[1])]
+
+st.subheader("Key Insights")
+
+st.subheader("Key Insights")
+
+col1, col2, col3, col4 = st.columns(4)
+
+countries_count = filtered_df["Country"].nunique()
+avg_value = int(filtered_df["Children_Out_of_School"].mean())
+
+max_country = (filtered_df.groupby("Country")[
+               "Children_Out_of_School"].mean().idxmax())
+
+latest_year = filtered_df["Year"].max()
+
+latest_avg = int(filtered_df[filtered_df["Year"] ==
+                 latest_year]["Children_Out_of_School"].mean())
+
+col1.metric("Countries", countries_count)
+col2.metric("Average", f"{avg_value:,}")
+col3.metric("Highest Country", max_country)
+col4.metric("Latest Year Avg", f"{latest_avg:,}")
 
 # Average children out of school line chart
 st.subheader("Average Children Out of School by Year")
@@ -97,13 +114,8 @@ else:
 # Top 10 countries with highest children out of school
 st.subheader("Top 10 Countries with Highest Children Out of School")
 
-top10_df = (
-    year_filtered_df
-    .groupby("Country")["Children_Out_of_School"].mean()
-    .reset_index()
-    .sort_values("Children_Out_of_School", ascending=False)
-    .head(10)
-)
+top10_df = (year_filtered_df.groupby("Country")["Children_Out_of_School"].mean(
+).reset_index().sort_values("Children_Out_of_School", ascending=False).head(10))
 
 fig_top10 = px.bar(
     top10_df,
@@ -122,3 +134,82 @@ fig_top10.update_layout(
 )
 
 st.plotly_chart(fig_top10, use_container_width=True)
+
+# World map showing average children out of school
+st.subheader("Global Distribution of Children Out of Primary School")
+
+# Aggregating by country
+dot_map_df = (year_filtered_df.groupby("Country")[
+              "Children_Out_of_School"].mean().reset_index())
+
+# Create a Scatter Geo map
+fig_dots = px.scatter_geo(
+    dot_map_df,
+    locations="Country",
+    locationmode="country names",
+    size="Children_Out_of_School",
+    hover_name="Country",
+    template="plotly_dark",
+    color_discrete_sequence=["#ff4b4b"]
+)
+fig_dots.update_layout(
+    margin={"r": 0, "t": 50, "l": 0, "b": 0},
+    geo=dict(
+        showframe=False,
+        showcoastlines=True,
+        projection_type='equirectangular',
+        bgcolor="rgb(17, 17, 17)",
+        showland=True,
+        landcolor="rgb(35, 35, 35)",
+        showocean=True,
+        oceancolor="rgb(10, 10, 10)"
+    )
+)
+st.plotly_chart(fig_dots, use_container_width=True)
+
+# Children out of school distribution histogram
+st.subheader("Distribution of Children Out of School")
+
+fig = px.histogram(
+    year_filtered_df,
+    x="Children_Out_of_School",
+    nbins=30,
+    labels={
+        "Children_Out_of_School": "Children Out of School",
+        "count": "Number of Countries"
+    },
+    color_discrete_sequence=["#636EFA"],
+)
+
+fig.update_layout(
+    xaxis_title="Children Out of School",
+    yaxis_title="Number of Countries",
+    bargap=0.1,
+    template="plotly_white",
+    margin=dict(l=40, r=40, t=80, b=40)
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+# Top 10 countries with lowest children out of school
+st.subheader("Top 10 Countries with Lowest Children Out of School")
+
+low10_df = (year_filtered_df.groupby("Country")["Children_Out_of_School"].mean(
+).reset_index().sort_values("Children_Out_of_School", ascending=True).head(10))
+
+fig_low10 = px.bar(
+    low10_df,
+    x="Children_Out_of_School",
+    y="Country",
+    orientation="h",
+    labels={"Children_Out_of_School": "Average Children Out of School",
+            "Country": "Country"}
+)
+
+fig_low10.update_layout(
+    yaxis=dict(autorange="reversed"),
+    xaxis_title="Average Children Out of School",
+    margin=dict(l=150, r=20, t=60, b=40),
+)
+
+st.plotly_chart(fig_low10, use_container_width=True)
