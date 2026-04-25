@@ -4,6 +4,21 @@ import plotly.express as px
 
 df = pd.read_csv("cleaned_data.csv")
 
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+        url("https://images.unsplash.com/photo-1610500796385-3ffc1ae2f046?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Title
 st.title("The Education Gap: Global Children Out of Primary School")
 
