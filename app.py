@@ -4,6 +4,7 @@ import plotly.express as px
 
 df = pd.read_csv("cleaned_data.csv")
 
+# Add a background picture
 st.markdown(
     """
     <style>
