@@ -56,12 +56,13 @@ year_filtered_df = df[(df["Year"] >= year_range[0]) &
 
 st.subheader("Key Insights")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 
-countries_count = df["Country"].nunique()
-avg_value = int(df["Children_Out_of_School"].mean())
+countries_count = filtered_df["Country"].nunique()
+avg_value = int(filtered_df["Children_Out_of_School"].mean())
 
-max_country = (df.groupby("Country")["Children_Out_of_School"].mean().idxmax())
+max_country = (filtered_df.groupby("Country")[
+               "Children_Out_of_School"].mean().idxmax())
 
 latest_year = df["Year"].max()
 
@@ -71,7 +72,8 @@ latest_avg = int(df[df["Year"] == latest_year]
 col1.metric("Countries", countries_count)
 col2.metric("Average", f"{avg_value:,}")
 col3.metric("Highest Country", max_country)
-col4.metric("Latest Year Avg", f"{latest_avg:,}")
+col4.metric("Latest Year", latest_year)
+col5.metric("Latest Year Avg", f"{latest_avg:,}")
 
 # Average children out of school line chart
 st.subheader("Average Children Out of School by Year")
